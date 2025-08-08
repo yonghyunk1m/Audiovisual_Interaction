@@ -7,3 +7,10 @@
 - Author: [Yonghyun Kim](https://yonghyunk1m.com)
 - Date: Aug 05 - 08, 2025 
 - Goal: Audiovisual Interaction using [ChucK](https://chuck.stanford.edu/) and [ChuGL](https://chuck.stanford.edu/chugl/).
+
+## How to use Piacle?
+### Download SoundFont you want to hear
+Download any SoundFont to the **soundfont** folder.
+
+### Download MIDI you want to play
+Download any MIDI to the **midi** folder. 
