@@ -10,9 +10,11 @@ Author: Yonghyun Kim (https://yonghyunk1m.com/)
 Date: Summer 2025
 */
 
+GWindow.fullscreen(); // Fullscreen
+
 // === 1. Initialization ===
-"midi/BumbleBee.mid" => string midiFilePath;
-//"midi/FantasieImpromptu.mid" => string midiFilePath;
+//"midi/BumbleBee.mid" => string midiFilePath;
+"midi/FantasieImpromptu.mid" => string midiFilePath;
 //"midi/GT_MIDI-Unprocessed_01_R1_2006_01-09_ORIG_MID--AUDIO_01_R1_2006_02_Track02_wav.midi" => string midiFilePath;
 //"midi/2024-02-17_21-37-57.mid" => string midiFilePath;
 1 => int track_num;//_RH;
@@ -30,7 +32,7 @@ GG.scene() @=> GScene @ scene;
 scene.backgroundColor(light_purple);
 scene.light().intensity(0);
 scene.ambient(@(1, 1, 1));
-GCircle targetCircle --> scene;
+Circle targetCircle --> scene;
 targetCircle.color(red);
 targetCircle.pos(@(0, 0, 0.01));
 targetCircle.sca(2.5);
@@ -106,7 +108,7 @@ class CompleteNote { int pitch; int velocity; dur duration; dur OnsetTime; }
 25::ms => dur CHORD_THRESHOLD;
 
 // --- 그래픽 오브젝트 풀링 ---
-1000 => int MAX_CIRCLES;
+2000 => int MAX_CIRCLES;
 Circle noteCircles[MAX_CIRCLES];
 int isCircleActive[MAX_CIRCLES];
 for (int i; i < MAX_CIRCLES; i++) {
@@ -115,14 +117,14 @@ for (int i; i < MAX_CIRCLES; i++) {
     0 => isCircleActive[i];
 }
 
-1000 => int MAX_TRACES; // 동시에 화면에 존재할 최대 흔적 수
+2000 => int MAX_TRACES; // 동시에 화면에 존재할 최대 흔적 수
 Circle traceCircles[MAX_TRACES];
 0 => int traceCircleIndex; // 다음에 사용할 흔적 원의 인덱스
 for (int i; i < MAX_TRACES; i++) {  
     traceCircles[i].init(128, 0.3); // 흔적은 조금 작게 설정
 }
 
-1000 => int MAX_PREVIEWS; // 동시에 표시할 수 있는 최대 미리보기 원의 수
+2000 => int MAX_PREVIEWS; // 동시에 표시할 수 있는 최대 미리보기 원의 수
 Circle previewCircles[MAX_PREVIEWS];
 for (int i; i < MAX_PREVIEWS; i++) {
     previewCircles[i].init(128, 0.5);
@@ -202,6 +204,7 @@ f.open("soundfont/YDP-GrandPiano-20160804.sf2");
 
 // === 'animateAndDestroy' 함수 수정됨: 동적 음역대 사용 ===
 fun void animateAndDestroy(Circle c, int index, dur musicalDuration, int pitch, int velocity) {
+    <<< "Animating and destroying circle at index: ", index, " with pitch: ", pitch, " and velocity: ", velocity >>>;
     // 1. 음높이에 따라 민트색과 노란색을 동적 음역대 기준으로 보간
     float colorProgress;
     if (minPitchInSong == maxPitchInSong) 0.5 => colorProgress; // 음이 하나뿐인 경우 중간 색상
@@ -213,7 +216,10 @@ fun void animateAndDestroy(Circle c, int index, dur musicalDuration, int pitch, 
     c.pos() @=> vec3 startPos; targetCircle.pos() @=> vec3 endPos; now => time startTime;
     BASE_TRAVEL_TIME * (musicalDuration / BASE_NOTE_DURATION) => dur calculatedTravelTime;
     (Math.max(MIN_TRAVEL_TIME / (1::ms), Math.min(MAX_TRAVEL_TIME / (1::ms), calculatedTravelTime / (1::ms)))) * (1::ms) => dur actualTravelTime;
-    while (now < startTime + actualTravelTime) { (now - startTime) / actualTravelTime => float progress; 1 - Math.pow(1 - progress, 3) => float easeOutProgress; vec3 newPos; (endPos - startPos) * easeOutProgress + startPos => newPos; c.pos(newPos); GG.nextFrame() => now; }
+    while (now < startTime + actualTravelTime) {
+        (now - startTime) / actualTravelTime => float progress; 1 - Math.pow(1 - progress, 3) => float easeOutProgress; vec3 newPos; 
+        (endPos - startPos) * easeOutProgress + startPos => newPos; c.pos(newPos); GG.nextFrame() => now; 
+    }
     c.pos(endPos);
     musicalDuration - actualTravelTime => dur holdTime;
     if (holdTime < MIN_HOLD_TIME) MIN_HOLD_TIME => holdTime;
@@ -227,9 +233,9 @@ fun void animateAndDestroy(Circle c, int index, dur musicalDuration, int pitch, 
         c.alpha(alpha);
         GG.nextFrame() => now;
     }
-
-    //c.detach(); // ★★★ 버그 수정 ★★★
-    0 => isCircleActive[index];
+    //0 => isCircleActive[index];
+    //<<<"Detaching">>>;
+    c.detach(); // ★★★ 버그 수정 ★★★
 }
 
 // FluidSynth를 사용하도록 완전히 새로 작성된 playNote 함수
@@ -454,7 +460,7 @@ while(true) {
                     noteIndex++; // 인덱스를 다음 노트로 이동
                     processedNotes[noteIndex] @=> currentNote; // currentNote를 다음 노트로 업데이트
                     
-                    cherr <= "Chord note detected! Playing simultaneously." <= IO.nl();
+                    //cherr <= "Chord note detected! Playing simultaneously." <= IO.nl();
                     spork ~ playNote(currentNote.pitch, currentNote.velocity, currentNote.duration);
                     triggerVisual(currentNote.pitch, currentNote.velocity, currentNote.duration);
                     revealProgressBlock(noteIndex);
