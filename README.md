@@ -4,4 +4,4 @@
 
 - Author: Yonghyun
 - Date: Aug 05 - 08, 2025 
-- Goal: Audiovisual Interaction using (ChucK)[https://chuck.stanford.edu/] and (ChuGL)[https://chuck.stanford.edu/chugl/].
+- Goal: Audiovisual Interaction using [ChucK](https://chuck.stanford.edu/) and [ChuGL](https://chuck.stanford.edu/chugl/).
