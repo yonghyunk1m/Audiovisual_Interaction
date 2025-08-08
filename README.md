@@ -2,6 +2,7 @@
 ![Piacle Introductory Image 2](https://github.com/yonghyunk1m/Audiovisual_Interaction/blob/main/Images/Piacle_2.png)
 # Piacle
 **Audiovisual_Interaction: Audio-Centric Game by ChucK+ChuGL**
+
 **CCRMA ChucK + ChuGL Workshop 2025 Project**
 - Author: [Yonghyun Kim](https://yonghyunk1m.com)
 - Date: Aug 05 - 08, 2025 
